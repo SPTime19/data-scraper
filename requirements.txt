@@ -1,0 +1,4 @@
+scrapy==2.0.1
+fire
+beautifulsoup4==4.8.2
+selenium==3.141.0
