@@ -11,10 +11,11 @@ import uuid
 
 class DS4AScrap:
 
-    def __init__(self, page_start: int = 1, page_end: int = 2):
+    def __init__(self, store_name: str, page_start: int = 1, page_end: int = 2):
         self.settings = get_project_settings()
         self.page_start = int(page_start)
         self.page_end = int(page_end)
+        self.store_name = store_name
         self.utc_format = '%Y-%m-%dT%H:%M:%SZ'
 
     def start_crawl(self, spider_name, allowed_domains: List[str], start_urls: List[str]):
@@ -38,7 +39,7 @@ class DS4AScrap:
         self.clear_job_folder()
         self.format_output_file(website_name="ReclameAqui")
         START_URL = [
-            f"https://www.reclameaqui.com.br/empresa/magazine-luiza-loja-online/lista-reclamacoes/?pagina={page}" for
+            f"https://www.reclameaqui.com.br/empresa/{self.store_name}/lista-reclamacoes/?pagina={page}" for
             page in range(self.page_start, self.page_end + 1)]
         self.start_crawl("ReclameAqui", ["reclameaqui.com.br"], START_URL)
 

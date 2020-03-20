@@ -14,4 +14,8 @@ Then change SELENIUM_DRIVER_EXECUTABLE_PATH @ scraper/settings.py to bin path.
 
 Will run reclameAqui spider for the first two pages.
 
-> python main.py --page_start=1 --page_end=2 scrapeReclameAqui
+> python main.py --store_name=magazine-luiza-loja-online --page_start=1 --page_end=2 scrapeReclameAqui
+
+## Roadmap
+
+[ ] Google business/map scrap
