@@ -80,6 +80,14 @@ class QuotesSpider(scrapy.Spider):
                         u'img_response',
                         '.upshot-seal > span:nth-child(1) > img:nth-child(1)',
                         []),
+                    Field(
+                        u'company_response',
+                        'div.ng-isolate-scope',
+                        []),
+                    Field(
+                        u'business_name',
+                        "a.business:nth-child(3)",
+                        [])
                 ])
         ]
     ]
