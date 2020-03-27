@@ -1,4 +1,6 @@
 import os
+import json
+from pathlib import Path
 
 
 def check_folder(base) -> str:
@@ -17,3 +19,12 @@ def check_folder(base) -> str:
             print("Race condition caught on creating folder {}".format(base_path))
             print("Returning existing folder...")
     return base_path
+
+
+def agg_jsonls(folder_path):
+    files = [file for file in Path(folder_path).rglob("*.jl")]
+    ad_ls = []
+    for file in files:
+        for ad in file.open("r", encoding="utf-8"):
+            ad_ls.append(json.loads(ad))
+    return ad_ls

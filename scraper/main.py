@@ -31,8 +31,7 @@ class DS4AScrap:
         if "FEED_URI" in self.settings:
             file_name = f"listing_{website_name}_{datetime.utcnow().strftime(self.utc_format)}.jl"
             output_folder = sc.check_folder(
-                str(Path(self.settings["FEED_URI"]).parent) + "_" + datetime.utcnow().strftime(
-                    "%Y-%m-%d-T%H-%M-%SZ") + f"_{uuid.uuid4()}")
+                str(Path(self.settings["FEED_URI"]).parent) + "_" + datetime.utcnow().strftime("%Y-%m-%d"))
             self.settings["FEED_URI"] = str(Path(output_folder) / file_name)
 
     def scrapeReclameAqui(self):
