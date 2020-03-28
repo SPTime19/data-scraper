@@ -16,7 +16,7 @@ class DS4AScrap:
         self.page_start = int(page_start)
         self.page_end = int(page_end)
         self.store_name = store_name
-        self.utc_format = '%Y-%m-%dT%H:%M:%SZ'
+        self.utc_format = '%Y-%m-%dT%H-%M-%SZ'
 
     def start_crawl(self, spider_name, allowed_domains: List[str], start_urls: List[str]):
         process = CrawlerProcess(settings=self.settings)
