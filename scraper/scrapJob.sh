@@ -1,8 +1,18 @@
 #!/bin/bash
 
-storesId=(tokestok-loja-online tokestok madeiramadeira mobly etna-home-store-loja-online etna-home-store casas-bahia-loja-online casas-bahia-lojas-fisicas)
+#storesId=(marabraz-lojas-fisicas marabraz-loja-online openbox2 lojas-lebes-lojas-fisicas lider-interiores viggore-moveis fabrispuma lojas-guido)
+storesId=(marabraz-loja-online marabraz-lojas-fisicas)
+
 for u in "${storesId[@]}"
 do
     echo "SCRAPING $u NOW..."
-    python main.py --store_name="$u" --page_start=1 --page_end=5 scrapeReclameAqui
+
+    for i in $(seq "$1" 20 "$2")
+    do
+        # shellcheck disable=SC2004
+        endPage=$(( $i + 20 ))
+        python main.py --store_name="$u" --page_start="$i" --page_end="$endPage" scrapeReclameAqui
+        sleep 2m
+    done
+
 done
