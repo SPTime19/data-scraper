@@ -12,11 +12,13 @@ import time
 import re
 import logging
 import traceback
+from pathlib import Path
 
 GM_WEBPAGE = 'https://www.google.com/maps/'
 MAX_WAIT = 10
 MAX_RETRY = 10
 MAX_SCROLLS = 40
+
 
 class GoogleMapsScraper:
 
@@ -38,15 +40,14 @@ class GoogleMapsScraper:
         return True
 
     def sort_by_date(self, url):
-        self.driver.get(url)
-        wait = WebDriverWait(self.driver, MAX_WAIT)
-
         # open dropdown menu
         clicked = False
         tries = 0
-
         while not clicked and tries < MAX_RETRY:
             try:
+                self.driver.get(url)
+                wait = WebDriverWait(self.driver, MAX_WAIT)
+
                 if not self.debug:
                     menu_bt = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.iRxY3GoUYUY__actionchip:nth-child(2) > div:nth-child(1)')))
                 else:
@@ -54,23 +55,43 @@ class GoogleMapsScraper:
                 menu_bt.click()
 
                 clicked = True
-                time.sleep(3)
+                time.sleep(10)
             except Exception as e:
                 tries += 1
-                self.logger.warn('Failed to click recent button')
+                print('Failed to click recent button...')
 
             # failed to open the dropdown
             if tries == MAX_RETRY:
                 return -1
 
         # second element of the list: most recent
-        recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitem\']')[1]
-        recent_rating_bt.click()
+        tries = 0
+        sortedd = False
+        while not sortedd and tries < MAX_RETRY:
+            try:
+                recent_rating_bt = self.driver.find_elements_by_xpath('//div[@role=\'menuitem\']')[1]
+                recent_rating_bt.click()
+                sortedd = True
+            except:
+                tries += 1
+                time.sleep(10)
+                print('Failed to click sort...')
+
+            # failed to sort by new
+            if tries == MAX_RETRY:
+                return -1
 
         # wait to load review (ajax call)
-        time.sleep(5)
-
+        time.sleep(10)
         return 0
+
+    def enrich_reviews(self, reviews, store_url, store_name):
+        # Formatting geo location part of url (eg "@-23.5375,-46.731083,17z") -> [-23.5375,-46.731083]
+        format_lat_long = lambda geo_snippet: geo_snippet.replace("@", "").split(",")[0:2]
+        for review in reviews:
+            review["geo_location"] = {k: v for k, v in zip(["lat", "long"], format_lat_long(Path(store_url).parent.name))}
+            review["store"] = store_name
+        return reviews
 
     def get_reviews(self, offset):
 

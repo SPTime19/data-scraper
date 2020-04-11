@@ -7,12 +7,6 @@ from datetime import datetime
 from companies import STORES
 
 
-def get_cep(location):
-    locs = location.split(" - ")
-    cep = locs[-1].split()[-1]
-    return cep
-
-
 class GmapParse:
 
     def __init__(self, debug: bool = False):
@@ -21,20 +15,32 @@ class GmapParse:
 
     def parseStore(self, company, n_reviews: int = 10):
         if company in STORES:
+            print(f"[*] Scraping '{company}'...")
             output_folder = Path(sc.check_folder("output"))
-            for store in STORES[company]:
-                error = self.scraper.sort_by_date(store["url"])
+            for idx, store_url in enumerate(STORES[company]):
+                print(f"[*] Scraping now from '{store_url}'!")
+                print(f"{idx+1} out of {len(STORES[company])} links...")
+                error = self.scraper.sort_by_date(store_url)
                 if error == 0:
                     n = 0
-                    file = output_folder / f"gbusiness_{company}_{get_cep(store['location'])}_{datetime.utcnow().strftime('%Y-%m-%d-T%H-%M-%SZ')}.jl"
+                    file = output_folder / f"gbusiness_{company}_{datetime.utcnow().strftime('%Y-%m-%d-T%H-%M-%SZ')}.jl"
                     while n < n_reviews:
-                        reviews = self.scraper.get_reviews(n)
+                        reviews = self.scraper.enrich_reviews(self.scraper.get_reviews(n), store_url, company)
                         with file.open("a", encoding="utf-8") as js:
                             for r in reviews:
                                 js.write(json.dumps(r) + "\n")
-                        n += len(reviews)
+                        if len(reviews) == 0:
+                            n += 100
+                        else:
+                            n += len(reviews)
+                else:
+                    print(f"[*] Could not scrape link '{store_url}'. Link will be stored @error.log for further retries.")
+                    with Path("error.log").open("a", encoding="utf-8") as js:
+                        js.write(str(store_url) + "\n")
         else:
             raise Exception(f"Company '{company}' not found!")
+
+
 
 
 if __name__ == '__main__':
